@@ -1,6 +1,8 @@
-# TODO: import necessary libraries
+import math
+import matplotlib.pyplot as plt
+from .generaldistribution import Distribution
 
-# TODO: make a Binomial class that inherits from the Distribution class. Use the specifications below.
+class Binomial(Distribution):
     """ Binomial distribution class for calculating and 
     visualizing a Binomial distribution.
     
@@ -11,11 +13,10 @@
         p (float) representing the probability of an event occurring
                 
     """
-    
     #       A binomial distribution is defined by two variables: 
     #           the probability of getting a positive outcome
     #           the number of trials
-    
+
     #       If you know these two values, you can calculate the mean and the standard deviation
     #       
     #       For example, if you flip a fair coin 25 times, p = 0.5 and n = 25
@@ -24,8 +25,11 @@
     #           standard deviation = sqrt(n * p * (1 - p))
     
     #       
+    def __init__(self, p, n):
 
-    # TODO: define the init function
+        Distribution.__init__(self, mu, sigma)
+        self.p = p
+        self.n = n
         
         # TODO: store the probability of the distribution in an instance variable p
         # TODO: store the size of the distribution in an instance variable n
@@ -33,8 +37,8 @@
         # TODO: Now that you know p and n, you can calculate the mean and standard deviation
         #       You can use the calculate_mean() and calculate_stdev() methods defined below along with the __init__ function from the Distribution class
             
-    # TODO: write a method calculate_mean() according to the specifications below
-    
+    def calculate_mean(self):
+        
         """Function to calculate the mean from p and n
         
         Args: 
@@ -44,9 +48,12 @@
             float: mean of the data set
     
         """
-         
+        self.mean = self.p *  self.n
+        
+        return self.mean
+      
 
-    #TODO: write a calculate_stdev() method accordin to the specifications below.
+    def calculate_stdev(self):
 
         """Function to calculate the standard deviation from p and n.
         
@@ -57,8 +64,11 @@
             float: standard deviation of the data set
     
         """
+        self.stdev = math.sqrt(self.n * self.p * (1 - self.p))
 
-    # TODO: write a replace_stats_with_data() method according to the specifications below. The read_data_file() from the Generaldistribution class can read in a data
+        return self.stdev
+
+    def replace_stats_with_data(self, file_name):
     # file. Because the Binomaildistribution class inherits from the Generaldistribution class,
     # you don't need to re-write this method. However,  the method
     # doesn't update the mean or standard deviation of
@@ -86,8 +96,23 @@
             float: the n value
     
         """
-    
-    # TODO: write a method plot_bar() that outputs a bar chart of the data set according to the following specifications.
+        with open(file_name) as file:
+            data_list = []
+            line = file.readline()
+            while line:
+                data_list.append(int(list))
+                line = file.readline()
+        file.close()
+
+        self.data = data_list
+        self.n = len(self.data)
+        self.p = sum(self.data)/len(self.data)
+        self.mean = self.calculate_mean()
+        self.stdev = self.calculate_stdev()
+
+        return self.p, self.n
+
+    def plot_bar(self):
         """Function to output a histogram of the instance variable data using 
         matplotlib pyplot library.
         
@@ -97,6 +122,7 @@
         Returns:
             None
         """
+
     
     #TODO: Calculate the probability density function of the binomial distribution
         """Probability density function calculator for the binomial distribution.
