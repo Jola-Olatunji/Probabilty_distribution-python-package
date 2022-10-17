@@ -1,6 +1,6 @@
 import math
 import matplotlib.pyplot as plt
-from .generaldistribution import Distribution
+from .Generaldistribution import Distribution
 
 class Binomial(Distribution):
     """ Binomial distribution class for calculating and 
@@ -25,11 +25,11 @@ class Binomial(Distribution):
     #           standard deviation = sqrt(n * p * (1 - p))
     
     #       
-    def __init__(self, p, n):
+    def __init__(self, prob=.5, size = 20, mu = 0, sigma = 1):
 
         Distribution.__init__(self, mu, sigma)
-        self.p = p
-        self.n = n
+        self.p = prob
+        self.n = size
         
         # TODO: store the probability of the distribution in an instance variable p
         # TODO: store the size of the distribution in an instance variable n
@@ -68,7 +68,7 @@ class Binomial(Distribution):
 
         return self.stdev
 
-    def replace_stats_with_data(self, file_name):
+    def replace_stats_with_data(self):
     # file. Because the Binomaildistribution class inherits from the Generaldistribution class,
     # you don't need to re-write this method. However,  the method
     # doesn't update the mean or standard deviation of
@@ -96,22 +96,14 @@ class Binomial(Distribution):
             float: the n value
     
         """
-        with open(file_name) as file:
-            data_list = []
-            line = file.readline()
-            while line:
-                data_list.append(int(list))
-                line = file.readline()
-        file.close()
-
-        self.data = data_list
+        
         self.n = len(self.data)
         self.p = sum(self.data)/len(self.data)
         self.mean = self.calculate_mean()
         self.stdev = self.calculate_stdev()
 
         return self.p, self.n
-
+    
     def plot_bar(self):
         """Function to output a histogram of the instance variable data using 
         matplotlib pyplot library.
@@ -122,9 +114,14 @@ class Binomial(Distribution):
         Returns:
             None
         """
+        plt.hist(self.data)
+        plt.title('histogram of Data')
+        plt.xlabel('Data')
+        plt.ylabel('Count')
 
-    
-    #TODO: Calculate the probability density function of the binomial distribution
+
+    def pdf(self, k):
+
         """Probability density function calculator for the binomial distribution.
         
         Args:
@@ -134,8 +131,17 @@ class Binomial(Distribution):
         Returns:
             float: probability density function output
         """
+       
 
-    # write a method to plot the probability density function of the binomial distribution
+        def combination(k):
+            comb = math.gamma(self.n + 1)/ (math.gamma(k + 1) * math.gamma(self.n - k + 1))
+            return comb
+
+        binomial = combination(k) * (self.p **k) * (1-self.p)**(self.n - k)
+        
+        return binomial
+
+    def plot_pdf(self,n):
 
         """Function to plot the pdf of the binomial distribution
         
@@ -158,8 +164,21 @@ class Binomial(Distribution):
 
         #   This method should also return the x and y values used to make the chart
         #   The x and y values should be stored in separate lists
+
+        y = []
+        x = []
+        for i in range(n):
+            y.append(self.pdf(i))
+            x.append(i)
+        
+        plt.bar(x,y)
+        plt.title('Bar plot of the binomial pdf')
+        plt.xlabel('k')
+        plt.ylabel('pdf')
+
+        return x,y
                 
-    # write a method to output the sum of two binomial distributions. Assume both distributions have the same p value.
+    def __add__(self,other):
         
         """Function to add together two Binomial distributions with equal p
         
@@ -176,6 +195,13 @@ class Binomial(Distribution):
         except AssertionError as error:
             raise
         
+        result = Binomial()
+        result.n = self.n + other.n
+        result.p = self.p
+        result.calculate_mean()
+        result.calculate_stdev()
+
+        return result
         # TODO: Define addition for two binomial distributions. Assume that the
         # p values of the two distributions are the same. The formula for 
         # summing two binomial distributions with different p values is more complicated,
@@ -186,7 +212,8 @@ class Binomial(Distribution):
         # Hint: When adding two binomial distributions, the p value remains the same
         #   The new n value is the sum of the n values of the two distributions.
                         
-    # use the __repr__ magic method to output the characteristics of the binomial distribution object.
+    def __rep__(self):
+
     
         """Function to output the characteristics of the Binomial instance
         
@@ -197,6 +224,7 @@ class Binomial(Distribution):
             string: characteristics of the Binomial object
         
         """
+        return "mean {}, standard deviation {}, p {}, n {}.format(self.mean, self.stdev, self.p, self.n)"
         
         # TODO: Define the representation method so that the output looks like
         #       mean 5, standard deviation 4.5, p .8, n 20
@@ -204,4 +232,5 @@ class Binomial(Distribution):
         #       with the values replaced by whatever the actual distributions values are
         #       The method should return a string in the expected format
     
-        pass
+    
+        
